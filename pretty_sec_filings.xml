@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<feed
+    xmlns="http://www.w3.org/2005/Atom">
+    <title>Latest Filings - Wed, 21 Jul 2021 12:30:09 EDT</title>
+    <link rel="alternate" href="/cgi-bin/browse-edgar?action=getcurrent"/>
+    <link rel="self" href="/cgi-bin/browse-edgar?action=getcurrent"/>
+    <id>https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent</id>
+    <author>
+        <name>Webmaster</name>
+        <email>webmaster@sec.gov</email>
+    </author>
+    <updated>2021-07-21T12:30:09-04:00</updated>
+    <entry>
+        <title>CERT - Outbrain Inc. (0001454938) (Filer)</title>
+        <link rel="alternate" type="text/html" href="https://www.sec.gov/Archives/edgar/data/1454938/000135445721000821/0001354457-21-000821-index.htm"/>
+        <updated>2021-07-21T12:29:28-04:00</updated>
+        <category scheme="https://www.sec.gov/" label="form type" term="CERT"/>
+        <id>urn:tag:sec.gov,2008:accession-number=0001354457-21-000821</id>
+    </entry>
+    <entry>
+        <title>4 - SELIG ALLAN H (0001183319) (Reporting)</title>
+        <link rel="alternate" type="text/html" href="https://www.sec.gov/Archives/edgar/data/1183319/000156761921013761/0001567619-21-013761-index.htm"/>
+        <updated>2021-07-21T12:28:19-04:00</updated>
+        <category scheme="https://www.sec.gov/" label="form type" term="4"/>
+        <id>urn:tag:sec.gov,2008:accession-number=0001567619-21-013761</id>
+    </entry>
+    <entry>
+        <title>4 - MARCUS CORP (0000062234) (Issuer)</title>
+        <link rel="alternate" type="text/html" href="https://www.sec.gov/Archives/edgar/data/62234/000156761921013761/0001567619-21-013761-index.htm"/>
+        <updated>2021-07-21T12:28:19-04:00</updated>
+        <category scheme="https://www.sec.gov/" label="form type" term="4"/>
+        <id>urn:tag:sec.gov,2008:accession-number=0001567619-21-013761</id>
+    </entry>
+    <entry>
+        <title>13F-HR - Campbell Wealth Management (0001736648) (Filer)</title>
+        <link rel="alternate" type="text/html" href="https://www.sec.gov/Archives/edgar/data/1736648/000173664821000003/0001736648-21-000003-index.htm"/>
+        <updated>2021-07-21T12:27:53-04:00</updated>
+        <category scheme="https://www.sec.gov/" label="form type" term="13F-HR"/>
+        <id>urn:tag:sec.gov,2008:accession-number=0001736648-21-000003</id>
+    </entry>    
+</feed>

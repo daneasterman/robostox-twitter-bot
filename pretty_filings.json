@@ -1,0 +1,26 @@
+[
+	{
+		 "filing_link": "https://www.sec.gov/Archives/edgar/data/1875421/000121390021039667/0001213900-21-039667-index.htm",
+		 "form_type": "3",
+		 "form_explanation": "Hi, I'm, a Form 3",
+		 "human_date": "Friday, July 30 2021 at 21:59PM",
+		 "company_name": "Williams David Brewster",
+		 "cik_code": "001875421"
+	},
+	{
+		 "filing_link": "https://www.sec.gov/Archives/edgar/data/1855168/000121390021039667/0001213900-21-039667-index.htm",
+		 "form_type": "3",
+		 "form_explanation": "Hi, I'm, a Form 3",
+		 "human_date": "Friday, July 30 2021 at 21:59PM",
+		 "company_name": "Williams Rowland Acquisition Corp.",
+		 "cik_code": "001855168"
+	},
+	{
+		"filing_link": "https://www.sec.gov/Archives/edgar/data/1875463/000121390021039666/0001213900-21-039666-index.htm",
+		"form_type": "3",
+		"form_explanation": "Hi, I'm, a Form 3",
+		"human_date": "Friday, July 30 2021 at 21:58PM",
+		"company_name": "Rowland Jonathan David",
+		"cik_code": "001875463"
+  }
+]
