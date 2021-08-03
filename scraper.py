@@ -7,7 +7,20 @@ import json
 # pprint.pprint(entry_list)
 
 sec_html_url = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent"
-sec_xml_url = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
+
+SEC_XML_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
+
+FORMS = {
+	"10-Q": "The 10-Q form is the quarterly report for the company. This form includes details on profit/loss, the balance sheet and cash flow. The company CEO or CFO will present these quarterly results in a conference call to investors and analysts.",
+	"10-K": "The 10-K form is the annual financial report for the company.",
+	"3": "Form 3 provides details on the buying or selling of stock by company insiders.",
+	"4": "Form 4 provides details on the buying or selling of stock by company insiders.",
+	"5": "Form 5 provides details on the buying or selling of stock by company insiders.",
+	"8K": "Form 8-K reports on hiring/firing changes or other major structural changes in the company. For example this can include events such as: the resignation of the CFO, merger/acquisition announcements, or notifying investors of a new share buyback scheme.",
+	"S-4": "Form S-4 includes details on the terms of a merger/acquisition deal.",
+	"13D": "Form 13D is filed with the SEC when a person or group acquires more than 5 percent of the company's shares."
+}
+
 
 def get_company_name(title):
 	start_name = title.index(" - ") +3
@@ -21,27 +34,17 @@ def get_cik(title):
 	cik_code = title[start_cik:end_cik]
 	return cik_code
 
-FORMS = {
-	"10-Q": "The 10-Q form is the quarterly report for the company. This form includes details on profit/loss, the balance sheet and cash flow. The company CEO or CFO will present these quarterly results in a conference call to investors and analysts.",
-	"10-K": "The 10-K form is the annual financial report for the company.",
-	"3": "Form 3 provides details on the buying or selling of stock by company insiders.",
-	"4": "Form 4 provides details on the buying or selling of stock by company insiders.",
-	"5": "Form 5 provides details on the buying or selling of stock by company insiders.",
-	"8K": "Form 8-K reports on hiring/firing changes or other major structural changes in the company. For example this can include events such as: the resignation of the CFO, merger/acquisition announcements, or notifying investors of a new share buyback scheme.",
-	"S-4": "Form S-4 includes details on the terms of a merger/acquisition deal.",
-	"13D": "Form 13D is filed with the SEC when a person or group acquires more than 5 percent of the company's shares."
-}
-
 def generate_form_explanation(form_type):
 	form_explanation = FORMS.get(form_type, "")
 	return form_explanation
 
 # scraping function
+@app.task
 def get_rss():
 	headers = {'User-agent': 'Mozilla/5.0'}
 	entry_list = []
 	try:		
-		resp = requests.get(sec_xml_url, headers=headers)
+		resp = requests.get(SEC_XML_URL, headers=headers)
 		soup = BeautifulSoup(resp.content, "xml")
 		entries = soup.findAll('entry')
 		for e in entries:
