@@ -4,9 +4,8 @@ from dateutil.parser import parse
 from datetime import datetime
 import pprint
 import json
-# pprint.pprint(entry_list)
 
-sec_html_url = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent"
+# pprint.pprint(entry_list)
 
 SEC_XML_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 
@@ -39,7 +38,6 @@ def generate_form_explanation(form_type):
 	return form_explanation
 
 # scraping function
-@app.task
 def get_rss():
 	headers = {'User-agent': 'Mozilla/5.0'}
 	entry_list = []

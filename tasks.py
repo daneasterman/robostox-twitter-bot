@@ -3,9 +3,19 @@ import requests
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
 from datetime import datetime
-import pprint
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 import json
+import pprint
 # pprint.pprint(entry_list)
+
+cred = credentials.Certificate('firebase-sdk.json')
+DB_URL = 'https://robostox-a3e6d-default-rtdb.europe-west1.firebasedatabase.app/'
+
+firebase_admin.initialize_app(cred, {
+    'databaseURL': DB_URL
+})
 
 app = Celery()
 app.conf.timezone = 'UTC'
