@@ -1,0 +1,18 @@
+[
+	{
+		"filing_link": "https://www.sec.gov/Archives/edgar/data/1767339/000176733921000006/0001767339-21-000006-index.htm",
+		"form_type": "D",
+		"form_explanation": "",
+		"human_date": "Tuesday, August 03 2021 at 10:50AM",
+		"company_name": "JSON FILE DICT",
+		"cik_code": "001767339"
+	},
+	{
+		"filing_link": "https://www.sec.gov/Archives/edgar/data/1665650/000121390021039996/0001213900-21-039996-index.htm",
+		"form_type": "424B2",
+		"form_explanation": "",
+		"human_date": "Tuesday, August 03 2021 at 10:50AM",
+		"company_name": "JSON FILE DICT",
+		"cik_code": "001665650"
+	}
+]

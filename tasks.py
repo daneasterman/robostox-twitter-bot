@@ -10,22 +10,15 @@ import json
 import pprint
 # pprint.pprint(entry_list)
 
-cred = credentials.Certificate('firebase-sdk.json')
-DB_URL = 'https://robostox-a3e6d-default-rtdb.europe-west1.firebasedatabase.app/'
+# app = Celery()
+# app.conf.timezone = 'UTC'
 
-firebase_admin.initialize_app(cred, {
-    'databaseURL': DB_URL
-})
-
-app = Celery()
-app.conf.timezone = 'UTC'
-
-app.conf.beat_schedule = {
-    'scrape-every-5-seconds': {
-        'task': 'tasks.get_rss',
-        'schedule': 5.0
-    },
-}
+# app.conf.beat_schedule = {
+#     'scrape-every-5-seconds': {
+#         'task': 'tasks.get_rss',
+#         'schedule': 5.0
+#     },
+# }
 
 SEC_XML_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 
@@ -57,15 +50,20 @@ def generate_form_explanation(form_type):
 	return form_explanation
 
 def save_function(entry_list):
-	timestamp = datetime.now().strftime('%H:%M:%S-%Y-%m-%d')
-	filename = 'articles-{}.json'.format(timestamp)
-	with open(f"json/{filename}", 'w') as outfile:
-		json.dump(entry_list, outfile)
-
-@app.task
+	CREDS = credentials.Certificate('firebase-sdk.json')
+	DB_URL = 'https://robostox-a3e6d-default-rtdb.europe-west1.firebasedatabase.app/'
+	firebase_admin.initialize_app(CREDS, {'databaseURL': DB_URL})
+	
+	DB_REF = db.reference("/")
+	for e in entry_list:
+		print(e["cik_code"])
+		# DB_REF.child("entries").push(e)
+	
+# @app.task
 def get_rss():
-	headers = {'User-agent': 'Mozilla/5.0'}
+	headers = {'User-agent': 'Mozilla/5.0'}	
 	entry_list = []
+
 	try:
 		resp = requests.get(SEC_XML_URL, headers=headers)
 		soup = BeautifulSoup(resp.content, "xml")
@@ -75,14 +73,15 @@ def get_rss():
 			form_type = e.category.get("term")
 			title = e.title.text
 			api_date = e.updated.text
-			python_date = parse(api_date)
+			python_date = parse(api_date)			
 			human_date = python_date.strftime("%A, %B %d %Y at %I:%M%p")
 
 			entry = {
 				"filing_link": filing_link,
 				"form_type": form_type,
-				"form_explanation": generate_form_explanation(form_type),
 				"human_date": human_date,
+				"api_date": api_date,
+				"form_explanation": generate_form_explanation(form_type),				
 				"company_name": get_company_name(title),
 				"cik_code": get_cik(title)
 			}
@@ -94,3 +93,5 @@ def get_rss():
 	except Exception as e:
 		print('The scraping job failed. See exception: ')
 		print(e)
+
+get_rss()
