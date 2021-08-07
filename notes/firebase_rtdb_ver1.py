@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 import json
 
-cred = credentials.Certificate('firebase-sdk.json')
+cred = credentials.Certificate('rtdb-sdk.json')
 DB_URL = 'https://robostox-a3e6d-default-rtdb.europe-west1.firebasedatabase.app/'
 
 firebase_admin.initialize_app(cred, {

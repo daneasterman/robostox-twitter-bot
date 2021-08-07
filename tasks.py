@@ -49,16 +49,11 @@ def generate_form_explanation(form_type):
 	form_explanation = FORMS.get(form_type, "")
 	return form_explanation
 
-def save_function(entry_list):
-	CREDS = credentials.Certificate('firebase-sdk.json')
-	DB_URL = 'https://robostox-a3e6d-default-rtdb.europe-west1.firebasedatabase.app/'
-	firebase_admin.initialize_app(CREDS, {'databaseURL': DB_URL})
-	
-	DB_REF = db.reference("/")
-	for e in entry_list:
-		print(e["cik_code"])
-		# DB_REF.child("entries").push(e)
-	
+# def save_function(entry_list):
+
+
+
+
 # @app.task
 def get_rss():
 	headers = {'User-agent': 'Mozilla/5.0'}	
@@ -94,4 +89,9 @@ def get_rss():
 		print('The scraping job failed. See exception: ')
 		print(e)
 
-get_rss()
+# get_rss()
+
+
+
+
+
