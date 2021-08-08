@@ -5,7 +5,8 @@ from dateutil.parser import parse
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import db
+from firebase_admin import firestore
+
 import json
 import pprint
 # pprint.pprint(entry_list)
@@ -49,10 +50,28 @@ def generate_form_explanation(form_type):
 	form_explanation = FORMS.get(form_type, "")
 	return form_explanation
 
-# def save_function(entry_list):
+cred = credentials.Certificate('firestore-sdk.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
+def save_function(entry_list):	
+	entries_ref = db.collection("entries")
+	# Make sure there is a DB before running:
+	docs = db.collection("entries").order_by("created_at").limit(1).get()
+	latest_entry_list = [doc for doc in docs]
+	latest_entry = latest_entry_list[0].to_dict()
+	latest_entry_pydate = parse(latest_entry.get("api_date"))
 
-
+	new_count = 0	
+	for e in entry_list:
+		# only if scraped date is later than latest, add it to db:
+		# Test for tomorrow:
+		scraped_entry_pydate = parse(e["api_date"])		
+		if scraped_entry_pydate > latest_entry_pydate:
+			print(f"Entry created for: {e['company_name']}")
+			new_count += 1
+			entries_ref.add(e)
+		print(f"New articles added to DB:: {new_count}")
 
 # @app.task
 def get_rss():
@@ -78,7 +97,8 @@ def get_rss():
 				"api_date": api_date,
 				"form_explanation": generate_form_explanation(form_type),				
 				"company_name": get_company_name(title),
-				"cik_code": get_cik(title)
+				"cik_code": get_cik(title),
+				"created_at": firestore.SERVER_TIMESTAMP
 			}
 			entry_list.append(entry)
 		
@@ -89,7 +109,7 @@ def get_rss():
 		print('The scraping job failed. See exception: ')
 		print(e)
 
-# get_rss()
+get_rss()
 
 
 

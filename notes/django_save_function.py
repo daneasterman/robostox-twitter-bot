@@ -10,7 +10,7 @@ def save_function(article_list):
     new_count = 0
 
     error = True
-    try: 
+    try:
         latest_article = News.objects.filter(source=source).order_by('-id')[0]
         print(latest_article.published)
         print('var TestTest: ', latest_article, 'type: ', type(latest_article))
@@ -21,8 +21,7 @@ def save_function(article_list):
         pass
     finally:
         # if the latest_article has an index out of range (nothing in model) it will fail
-        # this catches failure so it passes the first if statement
-        
+        # this catches failure so it passes the first if statement        
         if error is not True:
             latest_article = None
 
