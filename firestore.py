@@ -9,15 +9,34 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 entries_ref = db.collection("entries")
 
-docs = db.collection("entries").order_by("created_at").limit(1).get()
-latest_entry_list = [doc for doc in docs]
-latest_entry = latest_entry_list[0].to_dict()
-latest_entry_pydate = parse(latest_entry.get("api_date"))
+descend_docs = db.collection("entries").order_by("python_date")
+results = descend_docs.stream()
+results_list = [r for r in results]
+for re in results_list:
+	print(re.to_dict().get("human_date"))
+
+breakpoint()
+
+last_docs_list = [doc for doc in descend_docs]
+real_last_doc = last_docs_list[0].to_dict()
+
+all_entries = db.collection("entries").order_by("python_date").stream()
+entries_list = [ent for ent in all_entries]
+for item in entries_list:
+	dict_item = item.to_dict()
+	# print(dict_item["human_date"])
+
+breakpoint()
+
+print("**LATEST ENTRY", latest_entry)
+
+print("** Number of entry items:", len(entries_list))
 
 print("**", latest_entry_pydate)
-print("TYPE", type(latest_entry_pydate))
+# print("TYPE", type(latest_entry_pydate))
 
-
+# Python datetime:
+# Secs: %S
 
 # with open("json/simple.json") as file:
 # 	data_entries = json.load(file)

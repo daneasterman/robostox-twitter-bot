@@ -57,21 +57,29 @@ db = firestore.client()
 def save_function(entry_list):	
 	entries_ref = db.collection("entries")
 	# Make sure there is a DB before running:
-	docs = db.collection("entries").order_by("created_at").limit(1).get()
-	latest_entry_list = [doc for doc in docs]
-	latest_entry = latest_entry_list[0].to_dict()
-	latest_entry_pydate = parse(latest_entry.get("api_date"))
+	docs = docs = db.collection("entries").order_by("python_date", direction=firestore.Query.DESCENDING).limit(1).get()
+	latest_db_list = [doc for doc in docs]
+	latest_db_obj = latest_db_list[0].to_dict()
+	latest_db_pydate = latest_db_obj.get("python_date")
+	latest_db_title = latest_db_obj.get("title")
 
-	new_count = 0	
-	for e in entry_list:
-		# only if scraped date is later than latest, add it to db:
-		# Test for tomorrow:
-		scraped_entry_pydate = parse(e["api_date"])		
-		if scraped_entry_pydate > latest_entry_pydate:
-			print(f"Entry created for: {e['company_name']}")
-			new_count += 1
-			entries_ref.add(e)
-		print(f"New articles added to DB:: {new_count}")
+	new_count = 0
+	print(f"**Latest article published: {latest_db_pydate}")
+	for e in entry_list:		
+		scraped_pydate = e["python_date"]
+		scraped_title = e["title"]
+		if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and scraped_title != latest_db_title):
+			try: 			
+				new_count += 1
+				entries_ref.add(e)
+				print(f"Entry created for: {e['company_name']}")
+			except Exception as e:
+				print("Error when trying to add to Firestore DB:")
+				print(e)
+				break
+		else:
+			print("No new entries found")
+	print(f"New articles added to DB: {new_count}")
 
 # @app.task
 def get_rss():
@@ -89,16 +97,18 @@ def get_rss():
 			api_date = e.updated.text
 			python_date = parse(api_date)			
 			human_date = python_date.strftime("%A, %B %d %Y at %I:%M%p")
-
+			
 			entry = {
+				"title": title,
 				"filing_link": filing_link,
 				"form_type": form_type,
 				"human_date": human_date,
 				"api_date": api_date,
-				"form_explanation": generate_form_explanation(form_type),				
+				"form_explanation": generate_form_explanation(form_type),			
 				"company_name": get_company_name(title),
 				"cik_code": get_cik(title),
-				"created_at": firestore.SERVER_TIMESTAMP
+				"python_date": python_date,
+				
 			}
 			entry_list.append(entry)
 		

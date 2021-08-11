@@ -26,7 +26,6 @@ def save_function(article_list):
             latest_article = None
 
     for article in article_list:
-
         # latest_article is None signifies empty DB
         if latest_article is None:
             try:
