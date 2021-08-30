@@ -57,28 +57,29 @@ db = firestore.client()
 def save_function(entry_list):	
 	entries_ref = db.collection("entries")
 	# Make sure there is a DB before running:
-	docs = docs = db.collection("entries").order_by("python_date", direction=firestore.Query.DESCENDING).limit(1).get()
-	latest_db_list = [doc for doc in docs]
-	latest_db_obj = latest_db_list[0].to_dict()
-	latest_db_pydate = latest_db_obj.get("python_date")
-	latest_db_title = latest_db_obj.get("title")
+	# latest_query = db.collection("entries").order_by("python_date", direction=firestore.Query.DESCENDING).limit(1)
+	# latest_results = latest_query.get()
+	# latest_db_list = [doc for doc in latest_results]
+	# latest_db_obj = latest_db_list[0].to_dict()
+	# latest_db_pydate = latest_db_obj.get("python_date")
+	# latest_db_title = latest_db_obj.get("title")
 
 	new_count = 0
-	print(f"**Latest article published: {latest_db_pydate}")
-	for e in entry_list:		
+	# print(f"**Latest article published: {latest_db_pydate}")
+	for e in entry_list:
 		scraped_pydate = e["python_date"]
 		scraped_title = e["title"]
-		if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and scraped_title != latest_db_title):
-			try: 			
-				new_count += 1
-				entries_ref.add(e)
-				print(f"Entry created for: {e['company_name']}")
-			except Exception as e:
-				print("Error when trying to add to Firestore DB:")
-				print(e)
-				break
-		else:
-			print("No new entries found")
+		# if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and scraped_title != latest_db_title):
+		try:
+			new_count += 1
+			entries_ref.add(e)
+			print(f"Entry created for: {e['company_name']}")
+		except Exception as e:
+			print("Error when trying to add to Firestore DB:")
+			print(e)
+			break
+	else:
+		print("No new entries found")
 	print(f"New articles added to DB: {new_count}")
 
 # @app.task
@@ -113,6 +114,7 @@ def get_rss():
 			entry_list.append(entry)
 		
 		print('Finished scraping entries')
+		print('** NUMBER OF ENTRIES', len(entry_list))
 		return save_function(entry_list)
 
 	except Exception as e:
