@@ -56,7 +56,7 @@ db = firestore.client()
 
 def save_function(entry_list):	
 	entries_ref = db.collection("entries")
-	# Make sure there is a DB before running:
+	# *** MAKE SURE THERE ARE DB ENTRIES BEFORE RUNNING BELOW:
 	# latest_query = db.collection("entries").order_by("python_date", direction=firestore.Query.DESCENDING).limit(1)
 	# latest_results = latest_query.get()
 	# latest_db_list = [doc for doc in latest_results]
@@ -67,8 +67,8 @@ def save_function(entry_list):
 	new_count = 0
 	# print(f"**Latest article published: {latest_db_pydate}")
 	for e in entry_list:
-		scraped_pydate = e["python_date"]
-		scraped_title = e["title"]
+		# scraped_pydate = e["python_date"]
+		# scraped_title = e["title"]
 		# if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and scraped_title != latest_db_title):
 		try:
 			new_count += 1
@@ -92,9 +92,9 @@ def get_rss():
 		soup = BeautifulSoup(resp.content, "xml")
 		entries = soup.findAll('entry')
 		for e in entries:
+			title = e.title.text
 			filing_link = e.link.get("href")
 			form_type = e.category.get("term")
-			title = e.title.text
 			api_date = e.updated.text
 			python_date = parse(api_date)			
 			human_date = python_date.strftime("%A, %B %d %Y at %I:%M%p")
@@ -103,13 +103,12 @@ def get_rss():
 				"title": title,
 				"filing_link": filing_link,
 				"form_type": form_type,
+				"api_date": api_date,				
+				"python_date": python_date,
 				"human_date": human_date,
-				"api_date": api_date,
-				"form_explanation": generate_form_explanation(form_type),			
 				"company_name": get_company_name(title),
 				"cik_code": get_cik(title),
-				"python_date": python_date,
-				
+				"form_explanation": generate_form_explanation(form_type),
 			}
 			entry_list.append(entry)
 		
