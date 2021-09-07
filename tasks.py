@@ -6,20 +6,21 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+import time
 
 import json
 import pprint
 # pprint.pprint(entry_list)
 
-# app = Celery()
-# app.conf.timezone = 'UTC'
+app = Celery('tasks')
+app.conf.timezone = 'UTC'
 
-# app.conf.beat_schedule = {
-#     'scrape-every-5-seconds': {
-#         'task': 'tasks.get_rss',
-#         'schedule': 5.0
-#     },
-# }
+app.conf.beat_schedule = {
+    'scrape-every-5-seconds': {
+        'task': 'tasks.get_rss',
+        'schedule': 5.0
+    },
+}
 
 SEC_XML_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 
@@ -54,35 +55,63 @@ cred = credentials.Certificate('firestore-sdk.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-def save_function(entry_list):	
-	entries_ref = db.collection("entries")
-	# *** MAKE SURE THERE ARE DB ENTRIES BEFORE RUNNING BELOW:
-	# latest_query = db.collection("entries").order_by("python_date", direction=firestore.Query.DESCENDING).limit(1)
-	# latest_results = latest_query.get()
-	# latest_db_list = [doc for doc in latest_results]
-	# latest_db_obj = latest_db_list[0].to_dict()
-	# latest_db_pydate = latest_db_obj.get("python_date")
-	# latest_db_title = latest_db_obj.get("title")
+def get_latest_entry(entries_ref):
+	query_latest_entry = entries_ref.order_by(
+			"python_date", direction=firestore.Query.DESCENDING).limit(1)
+	latest_results = query_latest_entry.get()
+	latest_db_list = [doc for doc in latest_results]
+	latest_db_pydate = latest_db_list[0].get("python_date")
+	latest_db_title = latest_db_list[0].get("title")
+	return latest_db_pydate, latest_db_title
 
-	new_count = 0
-	# print(f"**Latest article published: {latest_db_pydate}")
-	for e in entry_list:
-		# scraped_pydate = e["python_date"]
-		# scraped_title = e["title"]
-		# if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and scraped_title != latest_db_title):
-		try:
-			new_count += 1
-			entries_ref.add(e)
-			print(f"Entry created for: {e['company_name']}")
-		except Exception as e:
-			print("Error when trying to add to Firestore DB:")
-			print(e)
-			break
-	else:
-		print("No new entries found")
-	print(f"New articles added to DB: {new_count}")
+def delete_earlier_entries(entries_ref, latest_db_pydate):
+	batch = db.batch()
+	query_earlier_entries = entries_ref.where("python_date", "<", latest_db_pydate)
+	earlier_results = query_earlier_entries.get()
+	time.sleep(10)
+	for doc in earlier_results:
+		print('Deleting:', doc.to_dict().get("title"))	
+		batch.delete(doc.reference)
+	batch.commit()
 
 # @app.task
+def save_to_firestore(entry_list):	
+	# Setup variables:
+	entries_ref = db.collection("entries")
+	gen_ref = entries_ref.limit(1)
+	gen_result = gen_ref.get()
+	new_count = 0
+
+	# Simply add entries with for loop if nothing in DB for first time:
+	if not gen_result:
+		for e in entry_list:
+			try:
+				new_count += 1
+				entries_ref.add(e)				
+				print(f"Entry created for: {e['company_name']}")
+			except Exception as e:
+				print(f"Error when trying to add to Firestore DB: {e}")	
+				break	
+	else:
+		latest_db_pydate, latest_db_title = get_latest_entry(entries_ref)	
+		for e in entry_list:
+			scraped_pydate = e["python_date"]
+			scraped_title = e["title"]		
+			if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and 
+			scraped_title != latest_db_title):
+				try:
+					new_count += 1
+					entries_ref.add(e)				
+					print(f"Entry created for: {e['company_name']}")
+				except Exception as e:
+					print("Error when trying to add to Firestore DB:")
+					print(e)
+					break
+		# Do the periodic delete here at end of the cycle:
+		delete_earlier_entries(entries_ref, latest_db_pydate)
+	print(f"New articles added to DB: {new_count}")
+
+@app.task
 def get_rss():
 	headers = {'User-agent': 'Mozilla/5.0'}	
 	entry_list = []
@@ -110,17 +139,16 @@ def get_rss():
 				"cik_code": get_cik(title),
 				"form_explanation": generate_form_explanation(form_type),
 			}
-			entry_list.append(entry)
+			entry_list.append(entry)		
 		
-		print('Finished scraping entries')
-		print('** NUMBER OF ENTRIES', len(entry_list))
-		return save_function(entry_list)
+		print('**Number of scraped entries:', len(entry_list))
+		return save_to_firestore(entry_list)
 
 	except Exception as e:
 		print('The scraping job failed. See exception: ')
 		print(e)
 
-get_rss()
+# get_rss()
 
 
 
