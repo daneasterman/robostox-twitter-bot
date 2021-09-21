@@ -30,9 +30,11 @@ FORMS = {
 	"3": "Form 3 provides details on the buying or selling of stock by company insiders.",
 	"4": "Form 4 provides details on the buying or selling of stock by company insiders.",
 	"5": "Form 5 provides details on the buying or selling of stock by company insiders.",
-	"8K": "Form 8-K reports on hiring/firing changes or other major structural changes in the company. For example this can include events such as: the resignation of the CFO, merger/acquisition announcements, or notifying investors of a new share buyback scheme.",
+	"8K": "Form 8-K reports on any major unscheduled event at the company. For example this can include: hiring/firing important executives, resignations, merger/acquisition announcements, or notifying investors of a new share buyback scheme.",
 	"S-4": "Form S-4 includes details on the terms of a merger/acquisition deal.",
-	"13D": "Form 13D is filed with the SEC when a person or group acquires more than 5 percent of the company's shares."
+	"13D": "Form 13D is filed with the SEC when a person or group acquires more than 5 percent of a company's shares.",
+	"13G": "Form 13G is a shorter version of Form 13D which is filed with the SEC when a person or group acquires more than 5 percent of a company's shares.",
+	"425": "Form 425 is a prospectus document disclosing information on a business combination such as a merger."
 }
 
 def get_company_name(title):
@@ -61,21 +63,9 @@ def get_latest_entry(entries_ref):
 	latest_results = query_latest_entry.get()
 	latest_db_list = [doc for doc in latest_results]
 	latest_db_pydate = latest_db_list[0].get("python_date")
-	latest_db_title = latest_db_list[0].get("title")
-	return latest_db_pydate, latest_db_title
+	return latest_db_pydate
 
-def delete_earlier_entries(entries_ref, latest_db_pydate):
-	batch = db.batch()
-	query_earlier_entries = entries_ref.where("python_date", "<", latest_db_pydate)
-	earlier_results = query_earlier_entries.get()
-	time.sleep(10)
-	for doc in earlier_results:
-		print('Deleting:', doc.to_dict().get("title"))	
-		batch.delete(doc.reference)
-	batch.commit()
-
-# @app.task
-def save_to_firestore(entry_list):	
+def save_to_firestore(entry_list):
 	# Setup variables:
 	entries_ref = db.collection("entries")
 	gen_ref = entries_ref.limit(1)
@@ -93,25 +83,21 @@ def save_to_firestore(entry_list):
 				print(f"Error when trying to add to Firestore DB: {e}")	
 				break	
 	else:
-		latest_db_pydate, latest_db_title = get_latest_entry(entries_ref)	
+		latest_db_pydate = get_latest_entry(entries_ref)	
 		for e in entry_list:
-			scraped_pydate = e["python_date"]
-			scraped_title = e["title"]		
-			if scraped_pydate > latest_db_pydate or (scraped_pydate == latest_db_pydate and 
-			scraped_title != latest_db_title):
+			scraped_pydate = e["python_date"]			
+			if scraped_pydate > latest_db_pydate:
 				try:
 					new_count += 1
-					entries_ref.add(e)				
+					entries_ref.add(e)
 					print(f"Entry created for: {e['company_name']}")
 				except Exception as e:
-					print("Error when trying to add to Firestore DB:")
-					print(e)
+					print(f"Error when trying to add to Firestore DB: {e}")
 					break
-		# Do the periodic delete here at end of the cycle:
-		delete_earlier_entries(entries_ref, latest_db_pydate)
+			# Do the periodic delete here at end of the cycle:		
 	print(f"New articles added to DB: {new_count}")
 
-@app.task
+# @app.task
 def get_rss():
 	headers = {'User-agent': 'Mozilla/5.0'}	
 	entry_list = []
@@ -125,14 +111,14 @@ def get_rss():
 			filing_link = e.link.get("href")
 			form_type = e.category.get("term")
 			api_date = e.updated.text
-			python_date = parse(api_date)			
-			human_date = python_date.strftime("%A, %B %d %Y at %I:%M%p")
+			python_date = parse(api_date)
+			human_date = python_date.strftime("%A, %B %d %Y at %I:%M%p (New York Time)")
 			
 			entry = {
 				"title": title,
 				"filing_link": filing_link,
 				"form_type": form_type,
-				"api_date": api_date,				
+				"api_date": api_date,
 				"python_date": python_date,
 				"human_date": human_date,
 				"company_name": get_company_name(title),
@@ -145,10 +131,9 @@ def get_rss():
 		return save_to_firestore(entry_list)
 
 	except Exception as e:
-		print('The scraping job failed. See exception: ')
-		print(e)
+		print(f'The scraping job failed. See exception: {e}')		
 
-# get_rss()
+get_rss()
 
 
 
