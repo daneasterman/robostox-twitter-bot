@@ -7,22 +7,36 @@ import json
 cred = credentials.Certificate('firestore-sdk.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-entries_ref = db.collection("entries")
+docs = db.collection("entries").order_by(
+	"python_date", direction=firestore.Query.DESCENDING).stream()
+
+from dateutil.parser import parse
+parse('2018-04-29T17:45:25Z', ignoretz=True)
+
+parse('2018-04-29T17:45:25Z')
+
+
+# json_array = []
+# for doc in docs:
+# 	json_array.append(doc.to_dict())
+
+# with open('json/bug_printout.json', 'w') as outfile:
+# 	json.dump(json_array, outfile)
 
 # breakpoint()
 
-query_latest_entry = entries_ref.order_by(
-	"python_date", direction=firestore.Query.DESCENDING).limit(1)
-latest_results = query_latest_entry.get()
-latest_db_list = [doc for doc in latest_results]
-latest_db_pydate = latest_db_list[0].get("python_date")
-latest_db_title = latest_db_list[0].get("title")
-print("**LATEST FILING", latest_db_title)
+# query_latest_entry = entries_ref.order_by(
+# 	"python_date", direction=firestore.Query.DESCENDING).limit(1)
+# latest_results = query_latest_entry.get()
+# latest_db_list = [doc for doc in latest_results]
+# latest_db_pydate = latest_db_list[0].get("python_date")
+# latest_db_title = latest_db_list[0].get("title")
+# print("**LATEST FILING", latest_db_title)
 
-query_earlier_entries = entries_ref.where("python_date", "<", latest_db_pydate)
-earlier_results = query_earlier_entries.get()
-for doc in earlier_results:
-	print(doc.to_dict().get("title"))
+# query_earlier_entries = entries_ref.where("python_date", "<", latest_db_pydate)
+# earlier_results = query_earlier_entries.get()
+# for doc in earlier_results:
+# 	print(doc.to_dict().get("title"))
 
 # batch = db.batch()
 # for doc in earlier_results:
@@ -40,7 +54,7 @@ for doc in earlier_results:
 
 # docs = db.collection(u'cities').where(u'capital', u'==', True).stream()
 # for doc in docs:
-#     print(f'{doc.id} => {doc.to_dict()}')
+# 	print(f'{doc.id} => {doc.to_dict()}')
 
 # with open('firestore_test.json', 'w') as outfile:
 # 	json.dump(doc_list, outfile, indent=4)
