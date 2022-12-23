@@ -7,9 +7,7 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-
 from pprint import pprint
-
 
 app = Celery('tasks')
 app.conf.timezone = 'UTC'
