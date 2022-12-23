@@ -1,16 +1,15 @@
-from celery import Celery
+import re
 import requests
+from celery import Celery
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import time
 
-import json
-import pprint
-# pprint.pprint(entry_list)
+from pprint import pprint
+
 
 app = Celery('tasks')
 app.conf.timezone = 'UTC'
@@ -43,19 +42,9 @@ def get_company_name(title):
 	company_name = title[start_name:end_name]
 	return company_name
 
-def get_cik(title):
-	start_cik = title.index("(") +2
-	end_cik = title.index(")")
-	cik_code = title[start_cik:end_cik]
-	return cik_code
-
 def generate_form_explanation(form_type):
 	form_explanation = FORMS.get(form_type, "")
 	return form_explanation
-
-cred = credentials.Certificate('firestore-sdk.json')
-firebase_admin.initialize_app(cred)
-db = firestore.client()
 
 def get_latest_entry(entries_ref):
 	query_latest_entry = entries_ref.order_by(
@@ -65,20 +54,27 @@ def get_latest_entry(entries_ref):
 	latest_db_pydate = latest_db_list[0].get("python_date")
 	return latest_db_pydate
 
+def circle_brackets_data(title):
+	string_list = re.findall(r'\(.*?\)', title)
+	cik = string_list[0].strip("()")
+	filing_entity = string_list[1].strip("()")
+	return cik, filing_entity
+
 def save_to_firestore(entry_list):
-	# Setup variables:
+	cred = credentials.Certificate('firestore-sdk.json')
+	firebase_admin.initialize_app(cred)
+	db = firestore.client()
 	entries_ref = db.collection("entries")
 	gen_ref = entries_ref.limit(1)
 	gen_result = gen_ref.get()
 	new_count = 0
-
 	# Simply add entries with for loop if nothing in DB for first time:
 	if not gen_result:
 		for e in entry_list:
 			try:
 				new_count += 1
-				entries_ref.add(e)				
-				print(f"Entry created for: {e['company_name']}")
+				entries_ref.add(e)
+				print(f"Entry created for: {e['title']}")			
 			except Exception as e:
 				print(f"Error when trying to add to Firestore DB: {e}")	
 				break	
@@ -90,18 +86,16 @@ def save_to_firestore(entry_list):
 				try:
 					new_count += 1
 					entries_ref.add(e)
-					print(f"Entry created for: {e['company_name']}")
+					print(f"Entry created for: {e['title']}")					
 				except Exception as e:
 					print(f"Error when trying to add to Firestore DB: {e}")
-					break
-			# Do the periodic delete here at end of the cycle:		
+					break					
 	print(f"New articles added to DB: {new_count}")
 
 # @app.task
 def get_rss():
 	headers = {'User-agent': 'Mozilla/5.0'}	
 	entry_list = []
-
 	try:
 		resp = requests.get(SEC_XML_URL, headers=headers)
 		soup = BeautifulSoup(resp.content, "xml")
@@ -113,7 +107,7 @@ def get_rss():
 			api_date = e.updated.text
 			python_date = parse(api_date)
 			human_date = python_date.strftime("%A, %B %d %Y at %I:%M%p (New York Time)")
-			
+			cik, filing_entity = circle_brackets_data(title)			
 			entry = {
 				"title": title,
 				"filing_link": filing_link,
@@ -122,20 +116,17 @@ def get_rss():
 				"python_date": python_date,
 				"human_date": human_date,
 				"company_name": get_company_name(title),
-				"cik_code": get_cik(title),
+				"cik_code": cik,
 				"form_explanation": generate_form_explanation(form_type),
 			}
-			entry_list.append(entry)		
-		
+			if filing_entity == "Reporting" or form_type not in FORMS.keys():
+				pass
+			else:
+				entry_list.append(entry)
 		print('**Number of scraped entries:', len(entry_list))
 		return save_to_firestore(entry_list)
-
+	
 	except Exception as e:
-		print(f'The scraping job failed. See exception: {e}')		
+		print(f'The scraping job failed. See exception: {e}')
 
 get_rss()
-
-
-
-
-
