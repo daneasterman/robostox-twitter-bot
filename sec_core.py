@@ -5,11 +5,10 @@ from dateutil.parser import parse
 from helpers.forms import FORMS
 from helpers.sec_utils import *
 from pprint import pprint
-
 # @app.task
 def get_tsla_filing():
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
-	# TSLA_LONG_CIK = "0001318605"
+	# TSLA_ZEROS_CIK = "0001318605"
 	CIK_TEST = "0000850261"
 	headers = {'User-agent': 'Mozilla/5.0'}	
 	try:
@@ -33,14 +32,14 @@ def get_tsla_filing():
 			}
 			if filing_entity != "Reporting":
 				if cik == CIK_TEST and form_type in FORMS.keys():
+					# insert twitter func here
 					print(filing)
 				else:
 					print("Incorrect cik and form skipped")
 					continue				
 			else:				
 				print("Reporting entity skipped")
-				continue
-			
+				continue			
 	except Exception as e:
 		print(f'The scraping job failed. See exception: {e}')
 
