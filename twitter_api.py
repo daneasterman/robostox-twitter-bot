@@ -16,7 +16,7 @@ def create_tweet(filing):
 	# Create the short link here to avoid so many Bitly API requests:
 	short_link = create_bitly_url(filing['filing_link'])
 	filing_copy = f"""
-		🚨 🗃️ New SEC Filing Alert! 🗃️ 🚨
+		🚨 🗃️ **TEST** New SEC Filing Alert! 🗃️ 🚨
 
 		{filing['company_name']} just filed Form {filing['form_type']} at {filing['human_time']} (NYC Time).
 		
@@ -24,6 +24,7 @@ def create_tweet(filing):
 
 		More SEC info here: {short_link}
 		"""
+	# Insert checking func here. 
 	try:
 		print(filing_copy)
 		# API.update_status(filing_copy)
