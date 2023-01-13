@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from dateutil.parser import parse
 from helpers.forms import FORMS
 from helpers.sec_utils import *
-from twitter_api import create_tweet
+from helpers.twitter_api import create_tweet
 from pprint import pprint
 
 app = Celery('tasks')
