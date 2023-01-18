@@ -14,7 +14,6 @@ click-plugins==1.1.1
 click-repl==0.2.0
 Deprecated==1.2.13
 dill==0.3.4
-grpcio==1.39.0
 httplib2==0.19.1
 idna==3.2
 kombu==5.1.0
