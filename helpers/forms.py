@@ -9,4 +9,4 @@ FORMS = {
 	"13D": "Form 13D is filed with the SEC when a person or group acquires more than 5 percent of a company's shares.",
 	"13G": "Form 13G is a shorter version of Form 13D. The form is filed when a person or group acquires more than 5 percent of a company's shares.",
 	"425": "Form 425 is a prospectus document disclosing information on a business combination such as a merger."
-}	
+}

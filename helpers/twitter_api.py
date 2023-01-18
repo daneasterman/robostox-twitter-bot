@@ -13,23 +13,23 @@ auth = tweepy.OAuthHandler(TWITTER_API_KEY, TWITTER_API_KEY_SECRET)
 auth.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
 API = tweepy.API(auth)
 
-
 def create_tweet(filing):
 	# Create the short link here to avoid so many Bitly API requests:
 	short_link = create_bitly_url(filing['filing_link'])
 	filing_copy = f"""
 		🚨 🗃️ **TEST** New SEC Filing Alert! 🗃️ 🚨
 
-		{filing['company_name']} just filed Form {filing['form_type']} at {filing['human_time']} (NYC Time).
+		{filing['company_name']} filed Form {filing['form_type']} at {filing['pretty_time']} (NYC Time).
 		
-		{filing['form_explanation']}
+		({filing['form_explanation']})
 
 		More SEC info here: {short_link}
+
+		$TSLA #TSLA
 		"""
-	# Insert checking func here. 
 	try:
 		print(filing_copy)
-		# API.update_status(filing_copy)
+		# API.update_status(filing_copy)  
 	except Exception as e:
 		print("Error:", e)
 
