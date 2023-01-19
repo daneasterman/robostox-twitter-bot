@@ -29,6 +29,7 @@ def get_filing():
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
 	DUMMY_CIK = "0000091576"
+	print("DUMMY_CIK", DUMMY_CIK)
 	headers = {'User-agent': 'Mozilla/5.0'}
 	try:
 		response = requests.get(SEC_URL, headers=headers)
