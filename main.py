@@ -32,6 +32,7 @@ def get_filing():
 	headers = {'User-agent': 'Mozilla/5.0'}
 	try:
 		response = requests.get(SEC_URL, headers=headers)
+		print(f"response: {response}")
 		soup = BeautifulSoup(response.content, "xml")
 		filings = soup.findAll('entry')
 		print("FILINGS", filings)
