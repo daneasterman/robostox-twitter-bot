@@ -6,11 +6,13 @@ from helpers.forms import FORMS
 from helpers.sec_utils import *
 from helpers.github_json import check_github_json
 from pprint import pprint
+load_dotenv()
 
 message_counter = 0
-
 app = Celery('tasks')
 app.conf.timezone = 'UTC'
+app.conf.broker_pool_limit = 1
+app.conf.broker_url = os.getenv('CLOUDAMQP_URL')
 
 app.conf.beat_schedule = {
     'scrape-every-10-seconds': {
@@ -26,7 +28,7 @@ def get_filing():
 	print('**MESSAGE COUNTER**', message_counter)
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0000863110"
+	DUMMY_CIK = "0001543151"
 	headers = {'User-agent': 'Mozilla/5.0'}
 	try:
 		response = requests.get(SEC_URL, headers=headers)
@@ -58,7 +60,7 @@ def get_filing():
 				# print("Skip, incorrect reporting entity")
 				continue
 	except Exception as e:
-		print(f'Error: {e}')
+		print("**GET_FILING ERROR:", e)
 
 # if __name__ == "__main__":
 # 	get_filing()

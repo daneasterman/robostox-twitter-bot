@@ -1,0 +1,1 @@
+worker: celery -A main worker -B -l INFO
