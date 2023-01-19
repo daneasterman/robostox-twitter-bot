@@ -28,7 +28,7 @@ def get_filing():
 	print('**MESSAGE COUNTER**', message_counter)
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0001866226"
+	DUMMY_CIK = "0001648960"
 	headers = {'User-agent': 'Mozilla/5.0'}
 	try:
 		response = requests.get(SEC_URL, headers=headers)
@@ -54,10 +54,10 @@ def get_filing():
 				if cik == DUMMY_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
 				else:
-					# print("Skip, incorrect cik and form_type")
+					print("Skip, incorrect cik and form_type")
 					continue
 			else:
-				# print("Skip, incorrect reporting entity")
+				print("Skip, incorrect reporting entity")
 				continue
 	except Exception as e:
 		print("**GET_FILING ERROR:", e)

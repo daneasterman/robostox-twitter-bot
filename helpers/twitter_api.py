@@ -28,8 +28,8 @@ def create_tweet(filing):
 		$UBER #UBER
 		"""
 	try:
-		# print(filing_copy)
-		API.update_status(filing_copy)
+		print(filing_copy)
+		# API.update_status(filing_copy)
 	except Exception as e:
 		print("**CREATE_TWEET ERROR:", e)
 
