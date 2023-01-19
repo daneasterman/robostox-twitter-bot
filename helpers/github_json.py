@@ -28,8 +28,9 @@ def update_github_json(filing):
 	repo, file, list_data = load_github_json()
 	list_data.append(filing)
 	bytes_data = json.dumps(list_data).encode('utf-8')
+	commit_msg = f"{filing['company_name']} - {filing['form_type']} - {filing['pretty_time']}"
 	try:
-		repo.update_file(file.path, f"{filing['company_name']}", bytes_data, file.sha)
+		repo.update_file(file.path, commit_msg, bytes_data, file.sha)
 		create_tweet(filing)
 	except Exception as e:
 		print("**UPDATE_GITHUB ERROR:", e)
