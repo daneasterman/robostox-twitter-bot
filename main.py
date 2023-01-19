@@ -28,14 +28,16 @@ def get_filing():
 	# print('**MESSAGE COUNTER**', message_counter)
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0000091576"	
-	headers = {'User-agent': 'Mozilla/5.0'}
+	DUMMY_CIK = "0000091576"
+	user_agent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+	headers = {'User-agent': user_agent}
 	try:
 		response = requests.get(SEC_URL, headers=headers)
-		print(f"response: {response}")
+		print(f"**RESPONSE: {response}")
 		soup = BeautifulSoup(response.content, "xml")
+		# print("soup", soup)
 		filings = soup.findAll('entry')
-		print("FILINGS", filings)
+		# print("FILINGS", filings)
 		for f in filings:
 			title = f.title.text
 			form_type = f.category.get("term")
@@ -56,10 +58,10 @@ def get_filing():
 				if cik == DUMMY_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
 				else:
-					print("Skip, incorrect cik and form_type")
+					# print("Skip, incorrect cik and form_type")
 					continue
 			else:
-				print("Skip, incorrect reporting entity")
+				# print("Skip, incorrect reporting entity")
 				continue
 	except Exception as e:
 		print("**GET_FILING ERROR:", e)
