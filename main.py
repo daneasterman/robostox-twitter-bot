@@ -23,12 +23,12 @@ app.conf.beat_schedule = {
 
 @app.task
 def get_filing():
-	global message_counter
-	message_counter += 1
-	print('**MESSAGE COUNTER**', message_counter)
+	# global message_counter
+	# message_counter += 1
+	# print('**MESSAGE COUNTER**', message_counter)
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0001648960"
+	DUMMY_CIK = "0000070318"
 	headers = {'User-agent': 'Mozilla/5.0'}
 	try:
 		response = requests.get(SEC_URL, headers=headers)
