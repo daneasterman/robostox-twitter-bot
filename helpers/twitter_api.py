@@ -25,7 +25,7 @@ def create_tweet(filing):
 
 		More SEC info here: {short_link}
 
-		$TSLA #TSLA
+		$UBER #UBER
 		"""
 	try:
 		# print(filing_copy)
