@@ -5,6 +5,7 @@ from dateutil.parser import parse
 from helpers.forms import FORMS
 from helpers.sec_utils import *
 from helpers.github_json import check_github_json
+from helpers.proxies import proxyDict
 from pprint import pprint
 load_dotenv()
 
@@ -28,7 +29,7 @@ def get_filing():
 	user_agent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 	headers = {'User-agent': user_agent}
 	try:
-		response = requests.get(SEC_URL, headers=headers)
+		response = requests.get(SEC_URL, headers=headers, proxies=proxyDict)
 		print(f"**RESPONSE: {response}")
 		soup = BeautifulSoup(response.content, "xml")		
 		filings = soup.findAll('entry')		
@@ -38,7 +39,7 @@ def get_filing():
 			api_date = f.updated.text
 			python_date = parse(api_date)
 			pretty_time = python_date.strftime("%I:%M%p")
-			cik, filing_entity = circle_brackets_data(title)			
+			cik, filing_entity = circle_brackets_data(title)		
 			filing = {
 				"company_name": get_company_name(title),					
 				"filing_link": f.link.get("href"),
