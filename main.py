@@ -28,13 +28,12 @@ def get_filing():
 	
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0000091576"
+	DUMMY_CIK = "0001018399"
 	# user_agent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 	user_agent = "RoboStox hellorobostox@gmail.com"
 	headers = {'User-agent': user_agent}
 	try:
-		response = requests.get(SEC_URL, headers=headers)
-		print(f"**RESPONSE: {response}")
+		response = requests.get(SEC_URL, headers=headers)		
 		soup = BeautifulSoup(response.content, "xml")		
 		filings = soup.findAll('entry')		
 		for f in filings:
@@ -53,8 +52,6 @@ def get_filing():
 				"form_explanation": generate_form_explanation(form_type),
 				"cik_code": cik
 			}
-			print("**FILING GOT THRU BLOCKERS", filing)
-			breakpoint()
 			if filing_entity != "Reporting":
 				if cik == DUMMY_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
