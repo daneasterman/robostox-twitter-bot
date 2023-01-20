@@ -27,9 +27,8 @@ def get_filing():
 	# os.environ['https_proxy'] = os.environ.get('FIXIE_URL', '')
 	
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
-	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0001018399"
-	# user_agent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+	TSLA_CIK = "0001318605"
+	# DUMMY_CIK = "0001018399"	
 	user_agent = "RoboStox hellorobostox@gmail.com"
 	headers = {'User-agent': user_agent}
 	try:
@@ -53,7 +52,7 @@ def get_filing():
 				"cik_code": cik
 			}
 			if filing_entity != "Reporting":
-				if cik == DUMMY_CIK and form_type in FORMS.keys():
+				if cik == TSLA_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
 				else:
 					# print("Skip, incorrect cik and form_type")

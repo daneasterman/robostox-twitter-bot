@@ -17,18 +17,20 @@ def create_tweet(filing):
 	# Create the short link here to avoid so many Bitly API requests:
 	short_link = create_bitly_url(filing['filing_link'])
 	filing_copy = f"""
-		🚨 🗃️ **TEST** New SEC Filing Alert! 🗃️ 🚨
+		🚨 New SEC Filing Alert!🚨
 
 		{filing['company_name']} filed Form {filing['form_type']} at {filing['pretty_time']} (NYC Time).
 		
 		({filing['form_explanation']})
 
 		More SEC info here: {short_link}
+		$TSLA #TSLA
 		"""
 	try:
 		# print(filing_copy)
 		API.update_status(filing_copy)
+		print("**SUCCESS WITH CREATE_TWEET**")
 	except Exception as e:
-		print("**CREATE_TWEET ERROR:", e)
+		print("**ERROR WITH CREATE_TWEET**", e)
 
 # create_tweet()
