@@ -17,14 +17,13 @@ def create_tweet(filing):
 	# Create the short link here to avoid so many Bitly API requests:
 	short_link = create_bitly_url(filing['filing_link'])
 	filing_copy = f"""
-		🚨 🗃️ **CLOUD TEST** New SEC Filing Alert! 🗃️ 🚨
+		🚨 🗃️ **TEST** New SEC Filing Alert! 🗃️ 🚨
 
 		{filing['company_name']} filed Form {filing['form_type']} at {filing['pretty_time']} (NYC Time).
 		
 		({filing['form_explanation']})
 
 		More SEC info here: {short_link}
-		
 		"""
 	try:
 		# print(filing_copy)
