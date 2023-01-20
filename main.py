@@ -28,7 +28,7 @@ def get_filing():
 	
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0001018399"
+	DUMMY_CIK = "0001957685"
 	# user_agent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 	user_agent = "RoboStox hellorobostox@gmail.com"
 	headers = {'User-agent': user_agent}

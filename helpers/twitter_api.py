@@ -24,12 +24,11 @@ def create_tweet(filing):
 		({filing['form_explanation']})
 
 		More SEC info here: {short_link}
-
-		$UBER #UBER
+		
 		"""
 	try:
-		print(filing_copy)
-		# API.update_status(filing_copy)
+		# print(filing_copy)
+		API.update_status(filing_copy)
 	except Exception as e:
 		print("**CREATE_TWEET ERROR:", e)
 
