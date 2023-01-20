@@ -15,9 +15,9 @@ app.conf.broker_pool_limit = 1
 app.conf.broker_url = os.getenv('CLOUDAMQP_URL')
 
 app.conf.beat_schedule = {
-    'scrape-every-30-seconds': {
+    'scrape-every-10-seconds': {
         'task': 'main.get_filing',
-        'schedule': 30.0
+        'schedule': 10.0
     },
 }
 
