@@ -8,24 +8,20 @@ from helpers.github_json import check_github_json
 from pprint import pprint
 load_dotenv()
 
-message_counter = 0
 app = Celery('tasks')
 app.conf.timezone = 'UTC'
 app.conf.broker_pool_limit = 1
 app.conf.broker_url = os.getenv('CLOUDAMQP_URL')
 
 app.conf.beat_schedule = {
-    'scrape-every-10-seconds': {
+    'scrape-every-30-seconds': {
         'task': 'main.get_filing',
-        'schedule': 10.0
+        'schedule': 30.0
     },
 }
 
 @app.task
-def get_filing():
-	# global message_counter
-	# message_counter += 1
-	# print('**MESSAGE COUNTER**', message_counter)
+def get_filing():	
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	# TSLA_CIK = "0001318605"
 	DUMMY_CIK = "0000091576"
@@ -34,10 +30,8 @@ def get_filing():
 	try:
 		response = requests.get(SEC_URL, headers=headers)
 		print(f"**RESPONSE: {response}")
-		soup = BeautifulSoup(response.content, "xml")
-		# print("soup", soup)
-		filings = soup.findAll('entry')
-		# print("FILINGS", filings)
+		soup = BeautifulSoup(response.content, "xml")		
+		filings = soup.findAll('entry')		
 		for f in filings:
 			title = f.title.text
 			form_type = f.category.get("term")
@@ -54,6 +48,7 @@ def get_filing():
 				"form_explanation": generate_form_explanation(form_type),
 				"cik_code": cik
 			}
+			print("**FILING GOT THRU BLOCKERS", filing)
 			if filing_entity != "Reporting":
 				if cik == DUMMY_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
