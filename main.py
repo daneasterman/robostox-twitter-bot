@@ -5,7 +5,6 @@ from dateutil.parser import parse
 from helpers.forms import FORMS
 from helpers.sec_utils import *
 from helpers.github_json import check_github_json
-from helpers.proxies import proxyDict
 from pprint import pprint
 load_dotenv()
 
@@ -23,9 +22,6 @@ app.conf.beat_schedule = {
 
 @app.task
 def get_filing():
-	# os.environ['http_proxy'] = os.environ.get('FIXIE_URL', '')
-	# os.environ['https_proxy'] = os.environ.get('FIXIE_URL', '')
-	
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
 	TSLA_CIK = "0001318605"
 	# DUMMY_CIK = "0001018399"	
