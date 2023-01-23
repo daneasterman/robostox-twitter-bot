@@ -50,11 +50,9 @@ def get_filing():
 			if filing_entity != "Reporting":
 				if cik == TSLA_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
-				else:
-					# print("Skip, incorrect cik and form_type")
+				else:					
 					continue
-			else:
-				# print("Skip, incorrect reporting entity")
+			else:				
 				continue
 	except Exception as e:
 		print("**GET_FILING ERROR:", e)
