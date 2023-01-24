@@ -2,6 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 from github import Github
+from sentry_sdk import capture_exception
 from helpers.twitter_api import create_tweet
 load_dotenv()
 
@@ -14,7 +15,7 @@ def load_github_json():
 		list_data = json.loads(file.decoded_content.decode('utf-8'))	
 		return repo, file, list_data
 	except Exception as e:
-		print("**LOAD_GITHUB ERROR:", e)
+		capture_exception(e)
 
 def check_github_json(filing):
 	_, _, list_data = load_github_json()		
@@ -33,4 +34,4 @@ def update_github_json(filing):
 		repo.update_file(file.path, commit_msg, bytes_data, file.sha)
 		create_tweet(filing)
 	except Exception as e:
-		print("**UPDATE_GITHUB ERROR:", e)
+		capture_exception(e)

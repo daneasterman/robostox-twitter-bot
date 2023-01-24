@@ -1,4 +1,5 @@
 import requests
+import sentry_sdk
 from celery import Celery
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
@@ -12,13 +13,13 @@ app = Celery('tasks')
 app.conf.timezone = 'UTC'
 app.conf.broker_pool_limit = 1
 app.conf.broker_url = os.getenv('CLOUDAMQP_URL')
-
 app.conf.beat_schedule = {
     'scrape-every-10-seconds': {
         'task': 'main.get_filing',
         'schedule': 10.0
     },
 }
+sentry_sdk.init(os.getenv('SENTRY_DSN'))
 
 @app.task
 def get_filing():
@@ -28,9 +29,11 @@ def get_filing():
 	user_agent = "RoboStox hellorobostox@gmail.com"
 	headers = {'User-agent': user_agent}
 	try:
-		response = requests.get(SEC_URL, headers=headers)		
+		response = requests.get(SEC_URL, headers=headers)
+		if response.status_code != 200:
+			raise Exception(f"Status Code Error: {response.status_code}")
 		soup = BeautifulSoup(response.content, "xml")		
-		filings = soup.findAll('entry')		
+		filings = soup.findAll('entry')			
 		for f in filings:
 			title = f.title.text
 			form_type = f.category.get("term")
@@ -50,12 +53,12 @@ def get_filing():
 			if filing_entity != "Reporting":
 				if cik == TSLA_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
-				else:					
+				else:						
 					continue
-			else:				
+			else:
 				continue
-	except Exception as e:
-		print("**GET_FILING ERROR:", e)
+	except Exception as e:		
+		sentry_sdk.capture_exception(e)
 
 # if __name__ == "__main__":
 # 	get_filing()

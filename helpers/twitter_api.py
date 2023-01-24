@@ -1,5 +1,6 @@
 import os
 import tweepy
+from sentry_sdk import capture_exception
 from helpers.sec_utils import create_bitly_url
 from dotenv import load_dotenv
 from pprint import pprint
@@ -27,10 +28,10 @@ def create_tweet(filing):
 		$TSLA #TSLA
 		"""
 	try:
-		# print(filing_copy)
 		API.update_status(filing_copy)
 		print("**SUCCESS WITH CREATE_TWEET**")
+		print(filing_copy)
 	except Exception as e:
-		print("**ERROR WITH CREATE_TWEET**", e)
+		capture_exception(e)
 
 # create_tweet()
