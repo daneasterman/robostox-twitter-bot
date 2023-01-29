@@ -3,7 +3,6 @@ import tweepy
 from sentry_sdk import capture_exception
 from helpers.sec_utils import create_bitly_url
 from dotenv import load_dotenv
-from pprint import pprint
 load_dotenv()
 
 TWITTER_API_KEY = str(os.getenv('TWITTER_API_KEY'))
@@ -28,7 +27,7 @@ def create_tweet(filing):
 		$TSLA #TSLA
 		"""
 	try:
-		# API.update_status(filing_copy)
+		API.update_status(filing_copy)
 		print("**SUCCESS WITH CREATE_TWEET**")
 		print(filing_copy)
 	except Exception as e:

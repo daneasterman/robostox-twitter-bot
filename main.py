@@ -23,8 +23,8 @@ sentry_sdk.init(os.getenv('SENTRY_DSN'))
 @app.task
 def get_filing():
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
-	# TSLA_CIK = "0001318605"
-	DUMMY_CIK = "0001048477"
+	TSLA_CIK = "0001318605"
+	# DUMMY_CIK = "0001048477"
 	user_agent = "RoboStox hellorobostox@gmail.com"
 	headers = {'User-agent': user_agent}
 	try:
@@ -50,7 +50,7 @@ def get_filing():
 				"cik_code": cik
 			}
 			if filing_entity != "Reporting":
-				if cik == DUMMY_CIK and form_type in FORMS.keys():
+				if cik == TSLA_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
 				else:						
 					continue
