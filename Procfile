@@ -1,1 +1,1 @@
-worker: celery -A main worker -B -l INFO
+worker: celery -A main worker -B -l INFO --without-gossip --without-mingle --without-heartbeat

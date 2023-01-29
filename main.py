@@ -6,7 +6,6 @@ from dateutil.parser import parse
 from helpers.forms import FORMS
 from helpers.sec_utils import *
 from helpers.github_json import check_github_json
-from pprint import pprint
 load_dotenv()
 
 app = Celery('tasks')
@@ -24,8 +23,8 @@ sentry_sdk.init(os.getenv('SENTRY_DSN'))
 @app.task
 def get_filing():
 	SEC_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom"
-	TSLA_CIK = "0001318605"
-	# DUMMY_CIK = "0001018399"	
+	# TSLA_CIK = "0001318605"
+	DUMMY_CIK = "0001048477"
 	user_agent = "RoboStox hellorobostox@gmail.com"
 	headers = {'User-agent': user_agent}
 	try:
@@ -33,7 +32,7 @@ def get_filing():
 		if response.status_code != 200:
 			raise Exception(f"Status Code Error: {response.status_code}")
 		soup = BeautifulSoup(response.content, "xml")		
-		filings = soup.findAll('entry')			
+		filings = soup.findAll('entry')
 		for f in filings:
 			title = f.title.text
 			form_type = f.category.get("term")
@@ -51,13 +50,13 @@ def get_filing():
 				"cik_code": cik
 			}
 			if filing_entity != "Reporting":
-				if cik == TSLA_CIK and form_type in FORMS.keys():
+				if cik == DUMMY_CIK and form_type in FORMS.keys():
 					check_github_json(filing)
 				else:						
 					continue
 			else:
 				continue
-	except Exception as e:		
+	except Exception as e:
 		sentry_sdk.capture_exception(e)
 
 # if __name__ == "__main__":

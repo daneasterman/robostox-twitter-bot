@@ -28,7 +28,7 @@ def create_tweet(filing):
 		$TSLA #TSLA
 		"""
 	try:
-		API.update_status(filing_copy)
+		# API.update_status(filing_copy)
 		print("**SUCCESS WITH CREATE_TWEET**")
 		print(filing_copy)
 	except Exception as e:
