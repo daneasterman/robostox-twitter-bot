@@ -9,7 +9,9 @@ The RoboStox Twitter Bot is live and has already picked up some insider selling 
 <img width="671" alt="Screenshot 2023-02-02 at 16 48 35" src="https://user-images.githubusercontent.com/4712052/216388503-1586ae7f-04b2-4336-ab46-5b3c2520b33c.png">
 
 **Technologies used:**
-- Python's Beautiful Soup library for XML extraction. - Celery and RabbitMQ for periodic task execution. - Github API for JSON data storage / persistence.
+- Python's Beautiful Soup library for XML extraction. 
+- Celery and RabbitMQ for periodic task execution. 
+- Github API for simple JSON data storage / persistence.
 - Twitter API for automatically creating tweets.
 - Heroku for cloud hosting.
 - Sentry for error reporting.
