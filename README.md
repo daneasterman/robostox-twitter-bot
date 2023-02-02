@@ -1,4 +1,4 @@
-### RoboStox Twitter Bot
+## RoboStox Twitter Bot
 
 This Twitter bot monitors the publicly available RSS / XML data stream provided by the US Securities and Exchange Commission (SEC) for new Tesla filings.
 
